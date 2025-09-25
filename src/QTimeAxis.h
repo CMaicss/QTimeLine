@@ -74,9 +74,16 @@ public:
     /**
      * 获取视口像素宽度在当前状态下等同的时间长度。
      * @param length 视口的像素宽度。
-     * @return 时间长度。
+     * @return 时间长度(ms)。
      */
     qint64 viewLengthToTimeLength(int length);
+
+    /**
+     * 获取时间长度在当前状态下等同的视口像素宽度，精确到整数的估计值。
+     * @param length 时间长度(ms)
+     * @return 像素长度。
+     */
+    int timeLengthToViewLength(qint64 length);
 
     /**
      * 设置内容控件。
@@ -84,6 +91,27 @@ public:
      */
     void setContent(QWidget* widget);
 
+    /**
+     * 设置视口左边距，默认为 10，建议设置不小于10的数字。
+     * @param padding 左边距
+     */
+    void setPaddingLeft(int padding);
+
+    void setPaddingRight(int padding);
+
+    void setPaddingTop(int padding);
+
+    void setPaddingBottom(int padding);
+
+    int paddingLeft() const;
+
+    int paddingRight() const;
+
+    int paddingTop() const;
+
+    int paddingBottom() const;
+
+    QRect viewGeometry() const;
 signals:
     void contentSizeChanged(int width, int height);
 protected:
