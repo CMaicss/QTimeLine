@@ -16,6 +16,8 @@ public:
     QDateTime viewStart;
     QDateTime viewEnd;
 
+    QDateTime currentDateTime;
+
     QWidget* view;
     QWidget* content = nullptr;
 
@@ -70,7 +72,6 @@ protected:
             // 按分刻度
             type = 4;
         }
-        qDebug() << type;
 
         QString headText;
         int headTextWidth = 0;
@@ -164,6 +165,17 @@ protected:
                 }
                 painter.drawText(textRect, Qt::AlignHCenter | Qt::AlignBottom, text);
             }
+        }
+
+
+        int x = p->timeInView(p->currentDateTime());
+        if (x > 0 && x < p->viewGeometry().width()) {
+            int paintX = x + p->paddingLeft();
+            QPen pen;
+            pen.setColor(QColor(0x3574F0));
+            pen.setWidth(2);
+            painter.setPen(pen);
+            painter.drawLine(paintX, p->paddingTop() + 1, paintX, p->viewGeometry().height() + p->paddingTop());
         }
 
     }
@@ -323,6 +335,20 @@ QRect QTimeAxis::viewGeometry() const {
     return d->view->geometry();
 }
 
+QWidget * QTimeAxis::cover() const {
+    return d->cover;
+}
+
+void QTimeAxis::setCurrentDateTime(const QDateTime &dateTime) {
+    d->currentDateTime = dateTime;
+    emit currentDateTimeChanged(dateTime);
+    update();
+}
+
+QDateTime QTimeAxis::currentDateTime() {
+    return d->currentDateTime;
+}
+
 void QTimeAxis::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
 }
@@ -341,6 +367,9 @@ void QTimeAxis::mousePressEvent(QMouseEvent *event) {
     d->startDragX = event->position().x();
     d->startDragTimeS = d->viewStart;
     d->startDragTimeE = d->viewEnd;
+    int xInView = event->position().x() - paddingLeft();
+    auto time = viewToTime(xInView);
+    setCurrentDateTime(time);
 }
 
 void QTimeAxis::mouseMoveEvent(QMouseEvent *event) {
@@ -358,6 +387,7 @@ void QTimeAxis::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
     setViewRange(vs, ve);
+
 }
 
 void QTimeAxis::mouseReleaseEvent(QMouseEvent *event) {

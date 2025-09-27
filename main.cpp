@@ -31,11 +31,12 @@ int main(int argc, char *argv[]) {
     }{
         auto *item = new GanttChartItem(axis);
         TimeRange r1(QDateTime(QDate(2025, 4, 10), QTime(0, 0, 0)),
-                                    QDateTime(QDate(2025, 4, 20), QTime(0, 0, 0)));
+                                    QDateTime());
         r1.setText("任务2_1");
         r1.setBackgroundColor(QColor(0x3598DB));
         item->insertRange(r1);
         items.push_back(item);
+        item->ranges()[0].setText("啦啦啦");
         item->setName("实体2");
     }
     for (int i = 3; i < 30; i++) {
@@ -48,6 +49,7 @@ int main(int argc, char *argv[]) {
         items.push_back(item);
         item->setName("实体" + QString::number(i));
     }
+    axis->setCurrentDateTime(QDateTime(QDate(2025, 5, 1), QTime(0, 0, 0)));
 
     axis->setItems(items);
 

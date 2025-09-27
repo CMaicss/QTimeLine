@@ -97,30 +97,91 @@ public:
      */
     void setPaddingLeft(int padding);
 
+    /**
+     * 设置视口右边距，默认为 10, 建议设置不小于10的数字。
+     * @param padding 右边距
+     */
     void setPaddingRight(int padding);
 
+    /**
+     * 设置视口上边距，默认为 30, 建议设置不小于30的数字。
+     * @param padding 上边距。
+     */
     void setPaddingTop(int padding);
 
+    /**
+     * 设置视口下边距，默认为 20, 建议设置不小于20的数字。
+     * @param padding 下边距。
+     */
     void setPaddingBottom(int padding);
 
+    /**
+     * 获取当前视口左边距。
+     * @return 左边距。
+     */
     int paddingLeft() const;
 
+    /**
+     * 获取当前视口右边距
+     * @return 右边距。
+     */
     int paddingRight() const;
 
+    /**
+     * 获取当前视口上边距。
+     * @return 上边距。
+     */
     int paddingTop() const;
 
+    /**
+     * 获取当前视口下边距。
+     * @return 下边距。
+     */
     int paddingBottom() const;
 
+    /**
+     * 获取当前视口几何，位置及尺寸。
+     * @return 当前视口几何。
+     */
     QRect viewGeometry() const;
+
+    /**
+     * 获取当前遮罩层对象。
+     * @return 遮罩层对象。
+     */
+    QWidget* cover() const;
+
+    /**
+     * 设置当前时间（对应标尺）。
+     * @param dateTime 当前时间。
+     */
+    void setCurrentDateTime(const QDateTime &dateTime);
+
+    /**
+     * 获取当前时间。
+     * @return 当前时间
+     */
+    QDateTime currentDateTime();
 signals:
+    /**
+     * 内容区域尺寸变化信号，用户可连接此信号来更新内容区域的变化（如缩放）
+     * @param width 宽度。
+     * @param height 高度。
+     */
     void contentSizeChanged(int width, int height);
+
+    /**
+     * 当前时间变化信号。
+     * @param dateTime 最新的当前时间。
+     */
+    void currentDateTimeChanged(const QDateTime &dateTime);
 protected:
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent *event);
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 private:
     QTimeAxisPrivate *d;
 };

@@ -2,6 +2,7 @@
 // Created by Maicss on 25-6-25.
 //
 #include <QPainter>
+#include <QPainterPath>
 #include "GanttChart.h"
 
 #include <QWheelEvent>
@@ -18,11 +19,31 @@ void GanttChartItem::paintEvent(QPaintEvent *event) {
     for (auto range : ranges()) {
         int x1 = m_ganttChart->timeInContent(range.from());
         int x2 = m_ganttChart->timeInContent(range.to());
+        if (range.to().isNull()) {
+            x2 = m_ganttChart->timeInContent(m_ganttChart->currentDateTime());
+        }
+        if (x1 >= x2) {
+            continue;
+        }
         int viewStartX = m_ganttChart->timeInContent(m_ganttChart->viewStart());
         int viewEndX = m_ganttChart->timeInContent(m_ganttChart->viewEnd());
         painter.setPen(Qt::NoPen);
         painter.setBrush(range.backgroundColor());
-        painter.drawRoundedRect(x1, padding, x2 - x1, height() - padding * 2, 6, 6);
+        const int radius = 8;
+        QPainterPath radiusRect;
+        radiusRect.moveTo(x1 + radius, padding);
+        radiusRect.arcTo(x1, padding, 2 * radius, 2 * radius, 90, 90);
+        radiusRect.arcTo(x1, height() - padding - 2 * radius, 2 * radius, 2 * radius, 180, 90);
+        // 判断若将结束时间设置为当前时间，则色带末尾不使用圆角
+        if (range.to().isNull()) {
+            radiusRect.lineTo(x2, height() - padding);
+            radiusRect.lineTo(x2, padding);
+        } else {
+            radiusRect.arcTo(x2 - 2 * radius, height() - padding - 2 * radius, 2 * radius, 2 * radius, 270, 90);
+            radiusRect.arcTo(x2 - 2 * radius, padding, 2 * radius, 2 * radius, 0, 90);
+        }
+        painter.drawPath(radiusRect);
+        // painter.drawRoundedRect(x1, padding, x2 - x1, height() - padding * 2, 6, 6);
         QPen pen;
         pen.setColor(range.textColor());
         painter.setPen(pen);
