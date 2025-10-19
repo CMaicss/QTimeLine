@@ -6,6 +6,7 @@
 #define GANTTCHART_H
 
 #include <QDateTime>
+#include <QTreeWidget>
 
 #include "../src/QTimeAxis.h"
 
@@ -97,8 +98,11 @@ class GanttChart;
  */
 class GanttChartItem : public QWidget {
     Q_OBJECT
+    friend class GanttChart;
 public:
     explicit GanttChartItem(GanttChart* ganttChart);
+    explicit GanttChartItem(GanttChartItem* item);
+    virtual ~GanttChartItem();
 
     /**
      * 插入区间（任务）
@@ -125,12 +129,32 @@ public:
      * @return 此行的名称
      */
     QString name() { return m_name;}
+
+    /**
+     * 获取子节点列表。
+     * @return 获取子节点列表
+     */
+    QVector<GanttChartItem*> childList();
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+    void setItem(QTreeWidgetItem *item) {
+        m_item = item;
+    }
+
+    QTreeWidgetItem* item() const { return m_item;}
+
+    void setExpanded(bool expanded) { m_itemExpanded = expanded;}
+    bool expanded() const { return m_itemExpanded;}
 private:
+    void addChildItem(GanttChartItem *item);
+
     QVector<TimeRange> m_ranges;
-    GanttChart* m_ganttChart;
+    GanttChart* m_ganttChart{};
     QString m_name;
+    QVector<GanttChartItem*> m_child;
+    QTreeWidgetItem* m_item;
+    bool m_itemExpanded{true};
 };
 
 /**
@@ -152,6 +176,8 @@ public:
      * @return 目前图中所有的行。
      */
     QVector<GanttChartItem*> items() { return m_items;}
+
+    int maxScreen();
 protected:
     void paintEvent(QPaintEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
@@ -161,6 +187,7 @@ private:
     QVector<GanttChartItem *> m_items;
     int m_offset{0};
     QDateTime m_currentDateTime;
+    QTreeWidget* m_treeWidget;
 };
 
 
